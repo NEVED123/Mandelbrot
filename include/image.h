@@ -9,9 +9,9 @@ typedef struct {
 
 typedef struct {
     // Placeholder
-    int red;
-    int green;
-    int blue;
+    int hue; // 0-360
+    int saturation; // 0-100
+    int value; // 0-100
 } Color;
 
 Color get_color_from_velocity(int velocity);
