@@ -6,8 +6,14 @@
     the types we will use - that will depend on the libaries.
 */
 
-Color get_color_from_velocity(int velocity){
-    //TODO: implement
+Color get_color_from_velocity(int velocity, int max_iterations){
+    Color ret;
+
+    ret.hue = 170; // light blue, arbitrarily picked
+    ret.saturation = 100;
+    ret.lightness = (int) 100 * velocity/max_iterations;
+
+    return ret;
 }
 
 Image get_image(int width, int height) {

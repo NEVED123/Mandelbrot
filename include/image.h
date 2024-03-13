@@ -11,7 +11,7 @@ typedef struct {
     // Placeholder
     int hue; // 0-360
     int saturation; // 0-100
-    int value; // 0-100
+    int lightness; // 0-100
 } Color;
 
 Color get_color_from_velocity(int velocity);
