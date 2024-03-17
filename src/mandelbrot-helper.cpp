@@ -1,5 +1,4 @@
 #include <complex.h>
-#include <tgmath.h>
 #include "mandelbrot-helper.h" //Relative paths here are bad practice, but fuck it
 
 /*
@@ -13,11 +12,11 @@ double scale(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
 
 // determines the escape velocity of a given complex number, returning a 0 indicates that it does not escape
 // and should be colored black by the renderer
-int get_velocity(double _Complex c, int iterations) {
-    double _Complex z = 0;
+int get_velocity(std::complex<double> c, int iterations) {
+    std::complex<double> z = 0;
     for (int i = 0; i < iterations; i++) {
         z = mandelbrot(z, c);
-        if (cabs(z) > 2) {
+        if (abs(z) > 2) {
             return iterations - i;
         }
     }
@@ -26,6 +25,6 @@ int get_velocity(double _Complex c, int iterations) {
 }
 
 // the actual mandelbrot function
-double _Complex mandelbrot(double _Complex z, double _Complex c) {
-    return cpow(z, 2) + c;
+std::complex<double> mandelbrot(std::complex<double> z, std::complex<double> c) {
+    return pow(z, 2) + c;
 }
