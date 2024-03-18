@@ -1,5 +1,5 @@
 #include <complex.h>
-#include "mandelbrot-helper.h" //Relative paths here are bad practice, but fuck it
+#include "mandelbrot-helper.hpp" //Relative paths here are bad practice, but fuck it
 
 /*
     Functions to help with the actual mandelbrot calcuations
