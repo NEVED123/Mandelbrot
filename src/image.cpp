@@ -1,4 +1,5 @@
-#include "image.h"
+#include "image.hpp"
+#include <opencv2/core/mat.hpp>
 
 /*
     Functions to help with image manipulation.
@@ -12,6 +13,6 @@ cv::Mat get_image(int width, int height) {
     // TODO: implement
 }
 
-void put_pixel(cv::Mat image, Color color, int x_pixel, int y_pixel) {
+void put_pixel(cv::Mat image, cv::Vec3b color, int x_pixel, int y_pixel) {
     // TODO: implement
 }

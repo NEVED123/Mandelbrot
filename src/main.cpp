@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <time.h>
-#include "image.h"
-#include "mandelbrot-helper.h"
-#include "video.h"
+#include "image.hpp"
+#include "mandelbrot-helper.hpp"
+#include "video.hpp"
 
 // only links OMP if we are going to use it, this is why it is a bit faster to do that gross command
 #ifdef OMP
