@@ -47,9 +47,19 @@ void serial() {
     //     NOTE: At this point in the loop, we will need to change the bounds of the mandelbrot set to create the zoom effect.
     //     If we go deep enough, this may require the use of arbitrary precision libraries to handle the numbers. We will cross this bridge.
     //     I'm not sure how the math works out to do this well, but sounds like a good Eli task to me.
+
+    // r_min /= zoom_factor+1;
+    // x_max /= zoom_factor+1;
+    // i_min /= zoom_factor+1;
+    // i_max /= zoom_factor+1;
     // }
 
     // save_video(video, "mandelbrot.mp4");
+
+
+
+    cv::Mat img;
+    img = cv::Mat(x_max - r_min, i_max - i_min, CV_8UC3);
 }
 
 void parallel() {
