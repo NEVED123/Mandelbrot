@@ -7,7 +7,7 @@ option(OMP "Toggles parallelization using the Open Multiprocessing library" OFF)
 find_package(OpenCV)
 find_package(OpenMP)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp mandelbrot-helper.cpp image.cpp)
 
 if(OMP)
     target_compile_definitions(${PROJECT_NAME} PUBLIC OMP)

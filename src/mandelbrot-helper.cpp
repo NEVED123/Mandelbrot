@@ -7,7 +7,7 @@
 
 // scales a value from one range to another
 double scale(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
-    return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
+    return (double) (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 }
 
 // determines the escape velocity of a given complex number, returning a 0 indicates that it does not escape
