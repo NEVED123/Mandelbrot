@@ -1,12 +1,7 @@
 #include "image.hpp"
 #include <opencv2/core/mat.hpp>
 
-/*
-    Functions to help with image manipulation.
-*/
-
-cv::Vec3b get_color_from_velocity(int velocity){
-    //TODO: implement
+cv::Vec3b get_color_from_velocity(int velocity, int iterations){
 }
 
 cv::Mat get_image(int width, int height) {

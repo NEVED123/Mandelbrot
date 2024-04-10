@@ -1,8 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include "image.hpp"
 #include "mandelbrot-helper.hpp"
 #include "video.hpp"
+#include <args/parser.hpp>
+#include <numeric>
+#include <vector>
+#include <string.h>
+#include <opencv2/core/mat.hpp>
 
 // only links OMP if we are going to use it, this is why it is a bit faster to do that gross command
 #ifdef OMP
@@ -22,34 +28,12 @@ double zoom_factor = .001; //This is the amount we will zoom in by between each 
 //These will change as we zoom in, real and imaginary max and min.
 //Keeping them as real numbers for now, since the imaginary conversion happens in in the loop.
 double r_min = -2;
-double x_max = 2;
+double r_max = 2;
 double i_min = -2;
 double i_max = 2;
 
 void serial() {
-    printf("Beginning serial mandelbrot generation\n");
-    
-    // cv::VideoWriter video = get_video();
-    // for (int i = 0; i < num_frames; i++) {
-    //     cv::Mat image = get_image(width, height);
-    //     for (int x = 0; x < width; x++) {
-    //         for (int y = 0; y < height; y++) {
-    //             double real = scale(x, 0, width, r_min, x_max); 
-    //             std::complex<double> imaginary = scale(y, 0, height, i_min, i_max) * I; //We are scaling to complex plane, so we need to multiply by I
-    //             int v = get_velocity(real + imaginary, iterations);
-    //             Color color = get_color_from_velocity(v);
-    //             put_pixel(image, color, x, y);
-    //         }
-    //     }
 
-    //     add_frame(video, image);
-
-    //     NOTE: At this point in the loop, we will need to change the bounds of the mandelbrot set to create the zoom effect.
-    //     If we go deep enough, this may require the use of arbitrary precision libraries to handle the numbers. We will cross this bridge.
-    //     I'm not sure how the math works out to do this well, but sounds like a good Eli task to me.
-    // }
-
-    // save_video(video, "mandelbrot.mp4");
 }
 
 void parallel() {
@@ -58,7 +42,41 @@ void parallel() {
 
 int main (int argc, char *argv[]) {
 
-    // --- Arguments --- TODO - Create a bash script that will handle arguments/flags, I will get on this to make our lives easier
+    std::string zoom_point_imaginary_string = ".13646737";
+    std::string zoom_point_real_string = "-.77568377";
+    std::string zoom_factor_string = ".001";
+
+    args::null_translator tr{};
+    args::parser parser{"Generate a mandelbrot zoom video.",
+        args::from_main(argc, argv), &tr};
+    parser.arg<int>(num_frames, "frames", "f")
+        .opt()
+        .help("Number of frames to generate (default: 24 * 30 = 720)");
+    parser.arg<int>(iterations, "iterations", "i")
+        .opt()
+        .help("Number of iterations to calculate velocity (default: 1000)");
+    parser.arg<int>(width, "width", "w")
+        .opt()
+        .help("Width of the image (default: 1920)");
+    parser.arg<int>(height, "height", "h")
+        .opt()
+        .help("Height of the image (default: 1080)");
+    parser.arg<std::string>(zoom_point_real_string, "real", "r")
+        .opt()
+        .help("Real point to zoom in on (default: -.77568377)");
+    parser.arg<std::string>(zoom_point_imaginary_string, "imaginary", "m")
+        .opt()
+        .help("Imaginary point to zoom in on (default: .13646737)");
+    parser.arg<std::string>(zoom_factor_string, "zoom_factor", "z")
+        .opt()
+        .help("Amount to zoom in by between each frame (default: .001)");
+
+    parser.parse();
+
+    //This command line library is really nice, but cannot accept doubles, so we interpret as a string then convert
+    zoom_point_real = std::stod(zoom_point_real_string);
+    zoom_point_imaginary = std::stod(zoom_point_imaginary_string);
+    zoom_factor = std::stod(zoom_factor_string);
 
     // If the OMP flag is on, it will trigger the parallel version - otherwise it will do the serial version
     #ifdef OMP
