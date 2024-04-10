@@ -13,8 +13,11 @@ int iterations = 10000; //This is the number of iterations we will use to calcul
 int width = 1000;
 int height = 1000;
 
-//These will change as we zoom in, real and imaginary max and min.
-//Keeping them as real numbers for now, since the imaginary conversion happens in in the loop.
+std::string r_min_string = "-2";
+std::string r_max_string = "2";
+std::string i_min_string = "-2";
+std::string i_max_string = "2";
+
 double r_min = -2;
 double r_max = 2;
 double i_min = -2;
@@ -61,11 +64,6 @@ void generate_mandelbrot_image(int num_of_threads) {
 
 int main (int argc, char *argv[]) {
 
-    std::string r_min_string = "-2";
-    std::string r_max_string = "2";
-    std::string i_min_string = "-2";
-    std::string i_max_string = "2";
-
     args::null_translator tr{};
     args::parser parser{"Generate a mandelbrot zoom image.",
     args::from_main(argc, argv), &tr};
@@ -94,12 +92,12 @@ int main (int argc, char *argv[]) {
         .opt()
         .help("Maximum imaginary value (default: 1)");
 
+    parser.parse();
+
     r_min = std::stod(r_min_string);
     r_max = std::stod(r_max_string);
     i_min = std::stod(i_min_string);
     i_max = std::stod(i_max_string);
-
-    parser.parse();
 
     double start_time = omp_get_wtime();
     generate_mandelbrot_image(threads);
