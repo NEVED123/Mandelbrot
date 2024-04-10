@@ -1,16 +1,10 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include <complex.h>
 #include "image.hpp"
 #include "mandelbrot-helper.hpp"
 #include "video.hpp"
-#include <args/parser.hpp>
-#include <numeric>
-#include <vector>
-#include <string.h>
-#include <opencv2/core/mat.hpp>
-#include "omp.h"
+#include "opencv2/opencv.hpp"
 
 int iterations = 10000; //This is the number of iterations we will use to calculate the veloci   ty of the mandelbrot set
 int width = 1000;
@@ -64,13 +58,14 @@ void generate_mandelbrot_image(int num_of_threads) {
 
 int main (int argc, char *argv[]) {
 
-    std::string zoom_point_imaginary_string = ".13646737";
-    std::string zoom_point_real_string = "-.77568377";
-    std::string zoom_factor_string = ".001";
+    std::string r_min_string = "-2";
+    std::string r_max_string = "2";
+    std::string i_min_string = "-2";
+    std::string i_max_string = "2";
 
     args::null_translator tr{};
-    args::parser parser{"Generate a mandelbrot zoom video.",
-        args::from_main(argc, argv), &tr};
+    args::parser parser{"Generate a mandelbrot zoom image.",
+    args::from_main(argc, argv), &tr};
     parser.arg<int>(iterations, "iterations", "i")
         .opt()
         .help("Number of iterations to calculate velocity (default: 1000)");
@@ -80,30 +75,36 @@ int main (int argc, char *argv[]) {
     parser.arg<int>(height, "height", "h")
         .opt()
         .help("Height of the image (default: 1080)");
-    parser.arg<double>(r_min, "r_min")
+    parser.arg<std::string>(r_min_string, "r_min")
         .opt()
         .help("Minimum real value (default: -2)");
-    parser.arg<double>(r_max, "r_max")
+    parser.arg<std::string>(r_max_string, "r_max")
         .opt()
         .help("Maximum real value (default: 2)");
-    parser.arg<double>(i_min, "i_min")
+    parser.arg<std::string>(i_min_string, "i_min")
         .opt()
         .help("Minimum imaginary value (default: -2)");
-    parser.arg<double>(i_max, "i_max")
+    parser.arg<std::string>(i_max_string, "i_max")
         .opt()
         .help("Maximum imaginary value (default: 2)");
-    parser.arg<double>(threads, "threads", "t")
+    parser.arg<int>(threads, "threads", "t")
         .opt()
         .help("Maximum imaginary value (default: 1)");
 
+    r_min = std::stod(r_min_string);
+    r_max = std::stod(r_max_string);
+    i_min = std::stod(i_min_string);
+    i_max = std::stod(i_max_string);
+
     parser.parse();
 
-    // If the OMP flag is on, it will trigger the parallel version - otherwise it will do the serial version
     double start_time = omp_get_wtime();
-
     generate_mandelbrot_image(threads);
     double elapsed_time = omp_get_wtime() - start_time;
     printf("finished in %.2f seconds\n", elapsed_time);
 
     return 0;
 }
+
+    
+
