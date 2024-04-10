@@ -6,7 +6,7 @@
 */
 
 // scales a value from one range to another
-double scale(int value, int fromLow, int fromHigh, int toLow, int toHigh) {
+double scale(double value, double fromLow, double fromHigh, double toLow, double toHigh) {
     return (double) (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 }
 

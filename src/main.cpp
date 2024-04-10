@@ -24,9 +24,9 @@ double zoom_factor = .001; //This is the amount we will zoom in by between each 
 //These will change as we zoom in, real and imaginary max and min.
 //Keeping them as real numbers for now, since the imaginary conversion happens in in the loop.
 double r_min = -2;
-double r_max = 2;
+double r_max = 1;
 double i_min = -2;
-double i_max = 2;
+double i_max = 1;
 
 void serial() {
     printf("bruh serial mandelbrot generation\n");
@@ -54,21 +54,57 @@ void serial() {
     printf("done\n");
 }
 
-void parallel() {
-    printf("Beginning parallel mandelbrot generation!\n");
+void parallel(int num_of_threads) {
+    printf("Beginning parallel Mandelbrot generation with %d threads!\n", num_of_threads);
+
+    // Set the number of threads
+    omp_set_num_threads(num_of_threads);
+
+    // Create a private image for each thread
+    std::vector<cv::Mat> private_images(omp_get_max_threads(), cv::Mat::zeros(height, width, CV_8UC3));
+
+    #pragma omp parallel for collapse(2) firstprivate(private_images)
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            double x_scaled = scale(x, 0, width, r_min, r_max);
+            double y_scaled = scale(y, 0, height, i_min, i_max);
+
+            std::complex<double> c = std::complex(x_scaled, y_scaled);
+            int velocity = get_velocity(c, iterations);
+            cv::Vec3b color = get_color_from_velocity(velocity, iterations);
+
+            private_images[omp_get_thread_num()].at<cv::Vec3b>(y, x) = color;
+        }
+    }
+
+    // Combine private images into the final image
+    cv::Mat image = cv::Mat::zeros(height, width, CV_8UC3);
+    for (auto& private_image : private_images) {
+        image += private_image;
+    }
+
+    // Display the image
+    if (!cv::imwrite("output_image.jpg", image)) {
+        fprintf(stderr, "Error writing output image.\n");
+    }
+
+    printf("Done\n");
 }
 
+
+
 int main (int argc, char *argv[]) {
-
-    // --- Arguments --- TODO - Create a bash script that will handle arguments/flags, I will get on this to make our lives easier
-
     // If the OMP flag is on, it will trigger the parallel version - otherwise it will do the serial version
+    double start_time = omp_get_wtime();
+
     #ifdef OMP=ON
-        parallel();
+        parallel(1);
     #else
         serial();
     #endif
 
+    double elapsed_time = omp_get_wtime() - start_time;
+    printf("finished in %.2f seconds\n", elapsed_time);
+
     return 0;
 }
-
