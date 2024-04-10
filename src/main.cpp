@@ -4,14 +4,12 @@
 #include <complex.h>
 #include "image.hpp"
 #include "mandelbrot-helper.hpp"
-#include "video.hpp"
 #include "opencv2/opencv.hpp"
 #include <args/parser.hpp>
 #include <omp.h>
 
-int iterations = 10000; //This is the number of iterations we will use to calculate the veloci   ty of the mandelbrot set
-int width = 1000;
-int height = 1000;
+int iterations = 10000; //This is the number of iterations we will use to calculate the velocity of the mandelbrot set
+int res = 1000;
 
 std::string r_min_string = "-2";
 std::string r_max_string = "2";
@@ -27,6 +25,10 @@ int threads = 1;
 
 void generate_mandelbrot_image(int num_of_threads) {
     printf("Beginning parallel Mandelbrot generation with %d threads!\n", num_of_threads);
+
+    //Goofy trick to round double
+    int width = res * (int)(r_max - r_min + .5);
+    int height = res * (int)(i_max - i_min + .5);
 
     // Set the number of threads
     omp_set_num_threads(num_of_threads);
@@ -70,12 +72,9 @@ int main (int argc, char *argv[]) {
     parser.arg<int>(iterations, "iterations", "i")
         .opt()
         .help("Number of iterations to calculate velocity (default: 1000)");
-    parser.arg<int>(width, "width", "w")
+    parser.arg<int>(res, "resolution", "r")
         .opt()
-        .help("Width of the image (default: 1920)");
-    parser.arg<int>(height, "height", "h")
-        .opt()
-        .help("Height of the image (default: 1080)");
+        .help("resolution of the image in pixels per unit^2 (default: 1000)");
     parser.arg<std::string>(r_min_string, "r_min")
         .opt()
         .help("Minimum real value (default: -2)");
