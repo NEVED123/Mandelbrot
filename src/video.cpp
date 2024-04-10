@@ -1,10 +1,8 @@
 #include "video.hpp"
-#include "<opencv/videoio.hpp>" 
-
+#include <opencv2/videoio.hpp>
 /*
     Functions to help with video manipulation.
 */
-
 cv::VideoWriter get_video() {
     // TODO: implement
 }

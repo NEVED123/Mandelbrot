@@ -1,15 +1,16 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <complex.h>
 #include "image.hpp"
 #include "mandelbrot-helper.hpp"
 #include "video.hpp"
-#include "opencv2/opencv.hpp"
-
-// only links OMP if we are going to use it, this is why it is a bit faster to do that gross command
-#ifdef OMP
-    #include "omp.h"
-#endif
+#include <args/parser.hpp>
+#include <numeric>
+#include <vector>
+#include <string.h>
+#include <opencv2/core/mat.hpp>
+#include "omp.h"
 
 int iterations = 10000; //This is the number of iterations we will use to calculate the veloci   ty of the mandelbrot set
 int width = 1000;
@@ -22,33 +23,9 @@ double r_max = 2;
 double i_min = -2;
 double i_max = 2;
 
-void serial() {
-    printf("bruh serial mandelbrot generation\n");
+int threads = 1;
 
-    // Create a blank black image (assuming you want it black)
-    cv::Mat image = cv::Mat::zeros(height, width, CV_8UC3);
-
-    // Add colored pixels to the image
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            double x_scaled = scale(x, 0, width, r_min, r_max);
-            double y_scaled = scale(y, 0, height, i_min, i_max);
-
-            std::complex<double> c = std::complex(x_scaled, y_scaled);
-            int velocity = get_velocity(c, iterations);
-            cv::Vec3b color = get_color_from_velocity(velocity, iterations);
-
-            image.at<cv::Vec3b>(y, x) = color;
-        }
-    }
-
-    // Display the image
-    cv::imwrite("output_image.jpg", image);
-
-    printf("done\n");
-}
-
-void parallel(int num_of_threads) {
+void generate_mandelbrot_image(int num_of_threads) {
     printf("Beginning parallel Mandelbrot generation with %d threads!\n", num_of_threads);
 
     // Set the number of threads
@@ -86,15 +63,45 @@ void parallel(int num_of_threads) {
 }
 
 int main (int argc, char *argv[]) {
+
+    std::string zoom_point_imaginary_string = ".13646737";
+    std::string zoom_point_real_string = "-.77568377";
+    std::string zoom_factor_string = ".001";
+
+    args::null_translator tr{};
+    args::parser parser{"Generate a mandelbrot zoom video.",
+        args::from_main(argc, argv), &tr};
+    parser.arg<int>(iterations, "iterations", "i")
+        .opt()
+        .help("Number of iterations to calculate velocity (default: 1000)");
+    parser.arg<int>(width, "width", "w")
+        .opt()
+        .help("Width of the image (default: 1920)");
+    parser.arg<int>(height, "height", "h")
+        .opt()
+        .help("Height of the image (default: 1080)");
+    parser.arg<double>(r_min, "r_min")
+        .opt()
+        .help("Minimum real value (default: -2)");
+    parser.arg<double>(r_max, "r_max")
+        .opt()
+        .help("Maximum real value (default: 2)");
+    parser.arg<double>(i_min, "i_min")
+        .opt()
+        .help("Minimum imaginary value (default: -2)");
+    parser.arg<double>(i_max, "i_max")
+        .opt()
+        .help("Maximum imaginary value (default: 2)");
+    parser.arg<double>(threads, "threads", "t")
+        .opt()
+        .help("Maximum imaginary value (default: 1)");
+
+    parser.parse();
+
     // If the OMP flag is on, it will trigger the parallel version - otherwise it will do the serial version
     double start_time = omp_get_wtime();
 
-    #ifdef OMP=ON
-        parallel(24);
-    #else
-        serial();
-    #endif
-
+    generate_mandelbrot_image(threads);
     double elapsed_time = omp_get_wtime() - start_time;
     printf("finished in %.2f seconds\n", elapsed_time);
 
