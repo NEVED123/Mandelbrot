@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <complex.h>
 #include "image.hpp"
 #include "mandelbrot-helper.hpp"
 #include "video.hpp"
 #include "opencv2/opencv.hpp"
+#include <args/parser.hpp>
+#include <omp.h>
 
 int iterations = 10000; //This is the number of iterations we will use to calculate the veloci   ty of the mandelbrot set
 int width = 1000;
