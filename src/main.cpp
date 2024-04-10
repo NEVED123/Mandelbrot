@@ -15,15 +15,9 @@
     #include "omp.h"
 #endif
 
-int num_frames = 24 * 30; //24 frames per second to create 30 second video
-int iterations = 1000; //This is the number of iterations we will use to calculate the veloci   ty of the mandelbrot set
+int iterations = 1000; //This is the number of iterations we will use to calculate the velocity of the mandelbrot set
 int width = 1920;
 int height = 1080;
-
-// According to https://en.wikipedia.org/wiki/Misiurewicz_point, this is a good point to zoom in on. Will set it as this for default
-double zoom_point_real = -.77568377;
-double zoom_point_imaginary = .13646737;
-double zoom_factor = .001; //This is the amount we will zoom in by between each frame
 
 //These will change as we zoom in, real and imaginary max and min.
 //Keeping them as real numbers for now, since the imaginary conversion happens in in the loop.
@@ -49,9 +43,6 @@ int main (int argc, char *argv[]) {
     args::null_translator tr{};
     args::parser parser{"Generate a mandelbrot zoom video.",
         args::from_main(argc, argv), &tr};
-    parser.arg<int>(num_frames, "frames", "f")
-        .opt()
-        .help("Number of frames to generate (default: 24 * 30 = 720)");
     parser.arg<int>(iterations, "iterations", "i")
         .opt()
         .help("Number of iterations to calculate velocity (default: 1000)");
@@ -61,15 +52,18 @@ int main (int argc, char *argv[]) {
     parser.arg<int>(height, "height", "h")
         .opt()
         .help("Height of the image (default: 1080)");
-    parser.arg<std::string>(zoom_point_real_string, "real", "r")
+    parser.arg<double>(r_min, "r_min")
         .opt()
-        .help("Real point to zoom in on (default: -.77568377)");
-    parser.arg<std::string>(zoom_point_imaginary_string, "imaginary", "m")
+        .help("Minimum real value (default: -2)");
+    parser.arg<double>(r_max, "r_max")
         .opt()
-        .help("Imaginary point to zoom in on (default: .13646737)");
-    parser.arg<std::string>(zoom_factor_string, "zoom_factor", "z")
+        .help("Maximum real value (default: 2)");
+    parser.arg<double>(i_min, "i_min")
         .opt()
-        .help("Amount to zoom in by between each frame (default: .001)");
+        .help("Minimum imaginary value (default: -2)");
+    parser.arg<double>(i_max, "i_max")
+        .opt()
+        .help("Maximum imaginary value (default: 2)");
 
     parser.parse();
 
