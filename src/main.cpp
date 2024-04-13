@@ -10,25 +10,23 @@
 
 int iterations = 10000; //This is the number of iterations we will use to calculate the velocity of the mandelbrot set
 int res = 1000;
-
-std::string r_min_string = "-2";
-std::string r_max_string = "2";
-std::string i_min_string = "-2";
-std::string i_max_string = "2";
+int width = 0;
+int height = 0;
 
 double r_min = -2;
 double r_max = 2;
 double i_min = -2;
 double i_max = 2;
 
+double zoom_point_real = 0;
+double zoom_point_imaginary = 0;
+double real_bound = 2;
+double imaginary_bound = 2;
+
 int threads = 1;
 
 void generate_mandelbrot_image(int num_of_threads) {
     printf("Beginning parallel Mandelbrot generation with %d threads!\n", num_of_threads);
-
-    //Goofy trick to round double
-    int width = res * (int)(r_max - r_min + .5);
-    int height = res * (int)(i_max - i_min + .5);
 
     // Set the number of threads
     omp_set_num_threads(num_of_threads);
@@ -66,6 +64,11 @@ void generate_mandelbrot_image(int num_of_threads) {
 
 int main (int argc, char *argv[]) {
 
+    std::string zoom_point_real_string = "0";
+    std::string zoom_point_imaginary_string = "0";
+    std::string real_bound_string = "2";
+    std::string imaginary_bound_string = "2";
+
     args::null_translator tr{};
     args::parser parser{"Generate a mandelbrot zoom image.",
     args::from_main(argc, argv), &tr};
@@ -74,29 +77,47 @@ int main (int argc, char *argv[]) {
         .help("Number of iterations to calculate velocity (default: 1000)");
     parser.arg<int>(res, "resolution", "r")
         .opt()
-        .help("resolution of the image in pixels per unit^2 (default: 1000)");
-    parser.arg<std::string>(r_min_string, "r_min")
+        .help("resolution of the image in pixels of the larger side, with the smaller side being scaled appropriately (default: 1000)");
+    parser.arg<std::string>(zoom_point_real_string, "zoom_point_real")
         .opt()
-        .help("Minimum real value (default: -2)");
-    parser.arg<std::string>(r_max_string, "r_max")
+        .help("Real point to zoom in on (default: 0)");
+    parser.arg<std::string>(zoom_point_imaginary_string, "zoom_point_imaginary")
         .opt()
-        .help("Maximum real value (default: 2)");
-    parser.arg<std::string>(i_min_string, "i_min")
+        .help("Imaginary point to zoom in on (default: 0)");
+    parser.arg<std::string>(real_bound_string, "real_bound")
         .opt()
-        .help("Minimum imaginary value (default: -2)");
-    parser.arg<std::string>(i_max_string, "i_max")
+        .help("Real bound of the zoom += zoom_point_real (default: 2)");
+    parser.arg<std::string>(imaginary_bound_string, "imaginary_bound")
         .opt()
-        .help("Maximum imaginary value (default: 2)");
+        .help("Imaginary bound of the zoom += zoom_point_imaginary (default: 2)");
     parser.arg<int>(threads, "threads", "t")
         .opt()
         .help("Maximum imaginary value (default: 1)");
 
     parser.parse();
 
-    r_min = std::stod(r_min_string);
-    r_max = std::stod(r_max_string);
-    i_min = std::stod(i_min_string);
-    i_max = std::stod(i_max_string);
+    zoom_point_real = std::stod(zoom_point_real_string);
+    zoom_point_imaginary = std::stod(zoom_point_imaginary_string);
+    real_bound = std::stod(real_bound_string);
+    imaginary_bound = std::stod(imaginary_bound_string);
+
+    r_max = zoom_point_real + real_bound;
+    r_min = zoom_point_real - real_bound;
+    i_max = zoom_point_imaginary + imaginary_bound;
+    i_min = zoom_point_imaginary - imaginary_bound;
+
+    if(r_max - r_min > i_max - i_min){
+        width = res;
+        height = (int)(res * (i_max - i_min) / (r_max - r_min));
+    }
+    else if(r_max - r_min < i_max - i_min){
+        height = res;
+        width = (int)(res * (r_max - r_min) / (i_max - i_min));
+    } 
+    else {
+        width = res;
+        height = res;
+    }
 
     double start_time = omp_get_wtime();
     generate_mandelbrot_image(threads);
