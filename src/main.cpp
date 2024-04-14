@@ -28,10 +28,8 @@ int threads = 1;
 void generate_mandelbrot_image(int num_of_threads) {
     printf("Beginning parallel Mandelbrot generation with %d threads!\n", num_of_threads);
 
-    // Set the number of threads
     omp_set_num_threads(num_of_threads);
 
-    // Create a private image for each thread
     std::vector<cv::Mat> private_images(omp_get_max_threads(), cv::Mat::zeros(height, width, CV_8UC3));
 
     #pragma omp parallel for collapse(2) firstprivate(private_images)
@@ -45,21 +43,19 @@ void generate_mandelbrot_image(int num_of_threads) {
             cv::Vec3b color = get_color_from_velocity(velocity, iterations);
 
             private_images[omp_get_thread_num()].at<cv::Vec3b>(y, x) = color;
-        }
+        }   
     }
 
-    // Combine private images into the final image
     cv::Mat image = cv::Mat::zeros(height, width, CV_8UC3);
     for (auto& private_image : private_images) {
-        image += private_image;
+        image += private_image; 
     }
 
-    // Display the image
     if (!cv::imwrite("output_image.jpg", image)) {
-        fprintf(stderr, "Error writing output image.\n");
+        printf("Error writing output image.\n");
+    } else{
+        printf("Done!\n");
     }
-
-    printf("Done\n");
 }
 
 int main (int argc, char *argv[]) {
@@ -105,6 +101,7 @@ int main (int argc, char *argv[]) {
     r_min = zoom_point_real - real_bound;
     i_max = zoom_point_imaginary + imaginary_bound;
     i_min = zoom_point_imaginary - imaginary_bound;
+
 
     if(r_max - r_min > i_max - i_min){
         width = res;
