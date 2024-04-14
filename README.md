@@ -39,6 +39,10 @@ To run the build, run:
 
 `./Mandelbrot [ARGS]`
 
+### Really Cool Point to Zoom On ([Misiurewicz Point](https://en.wikipedia.org/wiki/Misiurewicz_point))
+
+./Mandelbrot -t 24 --zoom_point_real=-0.77568 --zoom_point_imaginary=0.13646 --real_bound=.01 --imaginary_bound=.01
+
 ## OpenCV
 
 in OpenCV, images are just matrices of pixels. Each pixel is a vector of 3 bytes, one for each color channel. These matrices are then added frame by frame into a VideoWriter.
