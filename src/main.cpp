@@ -9,7 +9,7 @@
 #include <args/parser.hpp>
 #include <omp.h>
 
-int iterations = 10000; //This is the number of iterations we will use to calculate the veloci   ty of the mandelbrot set
+int iterations = 10000; //This is the number of iterations we will use to calculate the velocity of the mandelbrot set
 int width = 1000;
 int height = 1000;
 
@@ -26,12 +26,10 @@ double i_max = 2;
 int threads = 1;
 
 void generate_mandelbrot_image(int num_of_threads) {
-    printf("Beginning parallel Mandelbrot generation with %d threads!\n", num_of_threads);
+    printf("Beginning parallel Mandelbrot generation with %d threads\n", num_of_threads);
 
-    // Set the number of threads
     omp_set_num_threads(num_of_threads);
 
-    // Create a private image for each thread
     std::vector<cv::Mat> private_images(omp_get_max_threads(), cv::Mat::zeros(height, width, CV_8UC3));
 
     #pragma omp parallel for collapse(2) firstprivate(private_images)
@@ -48,15 +46,13 @@ void generate_mandelbrot_image(int num_of_threads) {
         }
     }
 
-    // Combine private images into the final image
     cv::Mat image = cv::Mat::zeros(height, width, CV_8UC3);
     for (auto& private_image : private_images) {
         image += private_image;
     }
 
-    // Display the image
     if (!cv::imwrite("output_image.jpg", image)) {
-        fprintf(stderr, "Error writing output image.\n");
+        printf("Error writing output image.\n");
     }
 
     printf("Done\n");
