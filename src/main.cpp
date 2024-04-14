@@ -55,7 +55,7 @@ void generate_mandelbrot_image(int num_of_threads) {
         printf("Error writing output image.\n");
     }
 
-    printf("Done!\n")
+    printf("Done!\n");
 }
 
 int main (int argc, char *argv[]) {
@@ -88,7 +88,7 @@ int main (int argc, char *argv[]) {
         .help("Imaginary bound of the zoom += zoom_point_imaginary (default: 2)");
     parser.arg<int>(threads, "threads", "t")
         .opt()
-        .help("Maximum imaginary value (default: 1)");
+        .help("Number of threads to use (default: 1)");
 
     parser.parse();
 
