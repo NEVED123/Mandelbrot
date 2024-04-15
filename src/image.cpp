@@ -11,7 +11,7 @@
 cv::Vec3b get_color_from_velocity(int velocity, int iterations){
     
     //The idea here is that most points to not take more than a hundred points to
-    //Escape. Therefore, we end up with velocity/iteration fractions very close to one
+    //Escape. Therefore, we end up with velocity/iteration fractions very close to 1,
     //resulting in almost entirely black/white images. Raising the fraction to the power of 512
     //Creates a steeper color curve for the high values of velocity. Note that 512 is arbitrary 
     double light_value = pow((double) velocity / iterations, 512);
