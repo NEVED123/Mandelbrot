@@ -40,6 +40,16 @@ To build your changes, run:
 To run the build, run:
 
 `./Mandelbrot [ARGS]`
+| Option                    | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| -h, --help                | Show this help message and exit                                            |
+| --iterations, -i INT      | Number of iterations to calculate velocity (default: 1000)                 |
+| --resolution, -r INT      | Resolution of the image in pixels of the larger side, with the smaller  side being scaled appropriately (default: 1000)     |
+| --zoom_point_real DOUBLE     | Real point to zoom in on (default: 0)                                      |
+| --zoom_point_imaginary DOUBLE| Imaginary point to zoom in on (default: 0)                                 |
+| --real_bound DOUBLE          | Real bound of the zoom += zoom_point_real (default: 2)                     |
+| --imaginary_bound DOUBLE     | Imaginary bound of the zoom += zoom_point_imaginary (default: 2)           |
+| --threads, -t         | Number of threads to use (default: 1)                                      |
 
 ### Really Cool Point to Zoom On ([Misiurewicz Point](https://en.wikipedia.org/wiki/Misiurewicz_point))
 
